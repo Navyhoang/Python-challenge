@@ -12,94 +12,123 @@ import csv
 #Open reosurces file
 datafile_csv = os.path.join("PyBank","Resources", "budget_data.csv")
 
-#--------------------------------------------------------------------------------------------------
-# Total number of months
-#--------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------
+# Month count, Net Profit/Loss
+# Approach: Append to List then find length and Sum 
+#-------------------------------------------------------------------------
 
+# Create empty lists to hold values in column 1, column 2
 monthlist = []
+netlist = []
+
+# Create empty lists to hold the difference in profit between the current month and previous month
+net_change_list = []
+net_change_month = []
+
+#Set arbitrary arrays for comparison loop later
+# greatest_increase = [Date of greatest increase, greatest increase]
+greatest_increase = ["", 0]
+
+# greatest_increase = [Date of greatest decrease, greatest decrease]
+greatest_decrease = ["", 10000000000000000000]
+
 
 #open the budget_data.csv file to read
 with open(datafile_csv, 'r', encoding='utf-8') as csvfile:
     csv_reader = csv.reader(csvfile, delimiter=",")
 
     #skip the header row
-    csv_header = next(csvfile, None)
+    header = next(csv_reader)
 
+            
     #Loop through each row, check if each cell in column 1 is not empty,
-    #then add to the list, then count number of months in the list
     for row in csv_reader:
-        if str(row[0]) != " ":
 
-            monthlist.append(row[0])
-            monthcount = len(monthlist)
-
-            #print(monthcount)
-
-           
-                        
-#--------------------------------------------------------------------------------------------------
-# Net profit/loss
-#--------------------------------------------------------------------------------------------------
-
-    netlist = []
-    net = 0
-
-#Loop through each row in range monthcound, +1 because the last item is excluded when using range
-    for i in range(monthcount + 1):
-
-        #add the value to the list
+        #then add all values in column 1 to the monthlist
+        monthlist.append(row[0])
+            
+        # then count number of months in the monthlist
+        monthcount = len(monthlist)
+            
+        #add the values in column 2 to the netlist
         netlist.append(int(row[1]))
 
-        #then sum all values in the list
+        #then sum all values in the netlist
         net = sum(netlist)
+                       
+        #Format numbers to currency
+        net_formated = "${:}".format(net)   
+              
+ #open the budget_data.csv file to read
+with open(datafile_csv, 'r', encoding='utf-8') as csvfile:
+    csv_reader = csv.reader(csvfile, delimiter=",")
+
+    #skip the header row
+    header = next(csv_reader)
+    
+    #Set first row
+    firstrow = next (csv_reader)
+    
+    # Extract the profit value of the first row
+    previous_net = int(firstrow[1])
+       
+    for row in csv_reader:
+                
+        # Subtract previous month's profit from the current month's profit
+        netchange = int(row[1]) - previous_net        
+               
+        # Add the netchange of the current month to the net_change_list
+        net_change_list += [netchange]
+        
+        # Add the date of the current month to the net_change_month
+        net_change_month += [row[0]]
+    
+        # Compare each row to the arbitrary arrays adn replace with the larger value and date
+        if netchange > greatest_increase[1]:
+            greatest_increase[0] = row[0]
+            greatest_increase[1] = netchange
+            
+        if netchange < greatest_decrease[1]:
+            greatest_decrease[0] = row[0]
+            greatest_decrease[1] = netchange
+            
+        # Then reset the previous_net to current month
+        previous_net = int(row[1])
+        
+        greatest_increase_formated = "${:}".format(greatest_increase[1])
+        greatest_increase_date = (greatest_increase[0]) 
+            
+    
+        greatest_decrease_formated = "${:}".format(greatest_decrease[1]) 
+        greatest_decrease_date = (greatest_decrease[0])
 
 
+#------------------------------------------------------------------------
+# Average Net Change
+# Approach: Use Function 
+#------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------------------------
-#Average of the profit/loss (average of column B), skip the header
-#--------------------------------------------------------------------------------------------------
+    #Use Functions to find Average
+    def Average(netlist): 
+        return sum(net_change_list) / len(net_change_list) 
+    
+    # Call the defined function
+    average = Average(netlist) 
 
-# Python program to get average of a list 
-def Average(netlist): 
-    return sum(netlist) / len(netlist) 
-  
-# Find average 
-average = Average(netlist) 
-  
+    #round average
+    average_rounded = round(average)
 
-
-#--------------------------------------------------------------------------------------------------
-#Find the greatest increase in profits (max of column B) then print the entire row
-#--------------------------------------------------------------------------------------------------
-
-greatest_increase = max(netlist)
-
-#--------------------------------------------------------------------------------------------------
-#Find the greatest decreasse in losses (min of column B) then print the entire column
-#--------------------------------------------------------------------------------------------------
-
-greatest_decrease = min(netlist)
-
-
+    #average_formated
+    average_formated = "${:}".format(average_rounded)
 
 # Open an output file and write results
-Analysis_file = os.path.join("Analysis_final.csv")
+Analysis_file = os.path.join("PyBank","Analysis","Analysis_final.csv")
 
 with open(Analysis_file,'w', newline="") as outputfile:
-    writer = csv.writer(outputfile)
-    print(f"There are total of {monthcount} months in the list")
-    print(f"The net profit/ lost is {netprofit} dollars")
-    print("Average of the list =", round(average, 2))
+    writer = csv.writer(outputfile, delimiter=" ")
     
-    for i in range(1,monthcount + 1):
-
-        if row[1] == greatest_increase:
-            print(f"The greast profit occured on {row[0]} and net profit of {row[1]}")
-            writer.writerow(["Month","Profit/Loss"])
-            writer.writerrows(i)
-
-        elif row[1] == greatest_decrease:
-            print(f" The greast loss occured on {row[0]} and net loss of {row[1]}")
-            writer.writerow(["Month","Profit/Loss"])
-            writer.writerrows(i)
-
+    writer.writerow(f"There are total of {monthcount} months in the list")
+    writer.writerow(f"Net profit/ lost is {net_formated}")
+    writer.writerow(f"Average net change is {average_formated}")
+    writer.writerow(f"The greatest increase in profit is {greatest_increase_formated} and on this date: {greatest_increase_date}")
+    writer.writerow(f"The greatest loss is {greatest_decrease_formated} and on this date: {greatest_decrease_date}")
