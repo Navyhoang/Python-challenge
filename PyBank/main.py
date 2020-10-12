@@ -121,14 +121,20 @@ with open(datafile_csv, 'r', encoding='utf-8') as csvfile:
     #average_formated
     average_formated = "${:}".format(average_rounded)
 
+#Create an output parameter
+output = (f"Financial Analysis \n"
+          f"--------------------------------------------------------------------------------\n"
+         f"There are total of {monthcount} months in the list \n"
+         f"Net profit/ lost is {net_formated} \n"
+         f"Average net change is {average_formated} \n"
+         f"The greatest increase in profit is {greatest_increase_formated} on {greatest_increase_date} \n"
+         f"The greatest decrease in profit is {greatest_decrease_formated} on {greatest_decrease_date}")
+
+#print to a csv file
 # Open an output file and write results
 Analysis_file = os.path.join("PyBank","Analysis","Analysis_final.csv")
 
-with open(Analysis_file,'w', newline="") as outputfile:
-    writer = csv.writer(outputfile, delimiter=" ")
+with open(Analysis_file,'w') as outputfile:
     
-    writer.writerow(f"There are total of {monthcount} months in the list")
-    writer.writerow(f"Net profit/ lost is {net_formated}")
-    writer.writerow(f"Average net change is {average_formated}")
-    writer.writerow(f"The greatest increase in profit is {greatest_increase_formated} and on this date: {greatest_increase_date}")
-    writer.writerow(f"The greatest loss is {greatest_decrease_formated} and on this date: {greatest_decrease_date}")
+    outputfile.write(output)
+    
