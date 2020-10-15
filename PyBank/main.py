@@ -10,7 +10,7 @@ import os
 import csv
 
 #Open reosurces file
-datafile_csv = os.path.join("PyBank","Resources", "budget_data.csv")
+datafile_csv = os.path.join("Resources", "budget_data.csv")
 
 #-------------------------------------------------------------------------
 # Month count, Net Profit/Loss
@@ -130,9 +130,12 @@ output = (f"Financial Analysis \n"
          f"The greatest increase in profit is {greatest_increase_formated} on {greatest_increase_date} \n"
          f"The greatest decrease in profit is {greatest_decrease_formated} on {greatest_decrease_date}")
 
+#print to terminal
+print(output)
+
 #print to a csv file
 # Open an output file and write results
-Analysis_file = os.path.join("PyBank","Analysis","Analysis_final.csv")
+Analysis_file = os.path.join("Analysis","Analysis_final.csv")
 
 with open(Analysis_file,'w') as outputfile:
     
