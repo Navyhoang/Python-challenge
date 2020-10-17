@@ -1,4 +1,4 @@
-#Open the budget_data file to read and calculate:
+#Open the budget_data file to read and calculate
 #Open a text file to write to:
     #Total number of months (how many rows), Skip the header
     #Net profit/loss (sum of column B), skip the header
@@ -10,11 +10,11 @@ import os
 import csv
 
 #Open reosurces file
-datafile_csv = os.path.join("Resources", "budget_data.csv")
+datafile_csv = os.path.join("PyBank","Resources", "budget_data.csv")
 
 #-------------------------------------------------------------------------
 # Month count, Net Profit/Loss
-# Approach: Append to List then find length and Sum 
+# Approach: Append to List then find length and sum 
 #-------------------------------------------------------------------------
 
 # Create empty lists to hold values in column 1, column 2
@@ -29,9 +29,8 @@ net_change_month = []
 # greatest_increase = [Date of greatest increase, greatest increase]
 greatest_increase = ["", 0]
 
-# greatest_increase = [Date of greatest decrease, greatest decrease]
+# greatest_decrease = [Date of greatest decrease, greatest decrease]
 greatest_decrease = ["", 10000000000000000000]
-
 
 #open the budget_data.csv file to read
 with open(datafile_csv, 'r', encoding='utf-8') as csvfile:
@@ -40,36 +39,35 @@ with open(datafile_csv, 'r', encoding='utf-8') as csvfile:
     #skip the header row
     header = next(csv_reader)
 
-            
-    #Loop through each row, check if each cell in column 1 is not empty,
+    #Loop through each row
     for row in csv_reader:
 
-        #then add all values in column 1 to the monthlist
+        #add all values in column 1 to the monthlist
         monthlist.append(row[0])
             
-        # then count number of months in the monthlist
+        #count number of months in the monthlist
         monthcount = len(monthlist)
             
         #add the values in column 2 to the netlist
         netlist.append(int(row[1]))
 
-        #then sum all values in the netlist
+        #sum all values in the netlist
         net = sum(netlist)
                        
         #Format numbers to currency
         net_formated = "${:}".format(net)   
               
- #open the budget_data.csv file to read
+#open the budget_data.csv file to read
 with open(datafile_csv, 'r', encoding='utf-8') as csvfile:
     csv_reader = csv.reader(csvfile, delimiter=",")
 
     #skip the header row
     header = next(csv_reader)
     
-    #Set first row
+    #set first row to a variable
     firstrow = next (csv_reader)
     
-    # Extract the profit value of the first row
+    #Extract the profit value of the first row
     previous_net = int(firstrow[1])
        
     for row in csv_reader:
@@ -83,11 +81,12 @@ with open(datafile_csv, 'r', encoding='utf-8') as csvfile:
         # Add the date of the current month to the net_change_month
         net_change_month += [row[0]]
     
-        # Compare each row to the arbitrary arrays adn replace with the larger value and date
+        # Compare each row's netchange to the arbitrary array and replace with the larger value and date
         if netchange > greatest_increase[1]:
             greatest_increase[0] = row[0]
             greatest_increase[1] = netchange
-            
+
+        # Compare each row's netchange to the arbitrary array and replace with the smaller value and date    
         if netchange < greatest_decrease[1]:
             greatest_decrease[0] = row[0]
             greatest_decrease[1] = netchange
@@ -95,13 +94,13 @@ with open(datafile_csv, 'r', encoding='utf-8') as csvfile:
         # Then reset the previous_net to current month
         previous_net = int(row[1])
         
+        # format to currency
         greatest_increase_formated = "${:}".format(greatest_increase[1])
+        greatest_decrease_formated = "${:}".format(greatest_decrease[1])
+        
+        # get date of greatest changes
         greatest_increase_date = (greatest_increase[0]) 
-            
-    
-        greatest_decrease_formated = "${:}".format(greatest_decrease[1]) 
         greatest_decrease_date = (greatest_decrease[0])
-
 
 #------------------------------------------------------------------------
 # Average Net Change
@@ -124,18 +123,18 @@ with open(datafile_csv, 'r', encoding='utf-8') as csvfile:
 #Create an output parameter
 output = (f"Financial Analysis \n"
           f"--------------------------------------------------------------------------------\n"
-         f"There are total of {monthcount} months in the list \n"
-         f"Net profit/ lost is {net_formated} \n"
-         f"Average net change is {average_formated} \n"
-         f"The greatest increase in profit is {greatest_increase_formated} on {greatest_increase_date} \n"
-         f"The greatest decrease in profit is {greatest_decrease_formated} on {greatest_decrease_date}")
+         f"Total Months: {monthcount}\n"
+         f"Net Profit: {net_formated} \n"
+         f"Average Change: {average_formated} \n"
+         f"Greatest Increase in Profit: {greatest_increase_formated} on {greatest_increase_date} \n"
+         f"Greatest Decrease in Profit: {greatest_decrease_formated} on {greatest_decrease_date}")
 
 #print to terminal
 print(output)
 
 #print to a csv file
 # Open an output file and write results
-Analysis_file = os.path.join("Analysis","Analysis_final.csv")
+Analysis_file = os.path.join("PyBank","Analysis","Analysis_final.csv")
 
 with open(Analysis_file,'w') as outputfile:
     
